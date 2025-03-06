@@ -45,3 +45,9 @@ jobs:
             cd ~/skillcicd
             docker-compose -f docker-compose.prod.yml down
             docker-compose -f docker-compose.prod.yml up -d
+
+            docker exec -it skillcicd_app php artisan cache:clear
+            docker exec -it skillcicd_app php artisan config:clear
+            docker exec -it skillcicd_app php artisan route:clear
+            docker exec -it skillcicd_app php artisan view:clear
+            docker exec -it skillcicd_app php artisan migrate --force
