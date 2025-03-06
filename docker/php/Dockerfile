@@ -27,12 +27,16 @@ WORKDIR /var/www/html
 # Копируем файлы проекта в контейнер
 COPY . .
 
+RUN ls -la /var/www/html
+
 # Устанавливаем владельца файлов www-data
 RUN chown -R www-data:www-data /var/www/html /var/www/.composer || true \
     && chmod -R 775 /var/www/.composer || true
 
+# Меняем пользователя контейнера
+USER www-data
+
 # Устанавливаем зависимости Laravel (без dev-пакетов)
 RUN composer install --no-dev --optimize-autoloader
 
-# Меняем пользователя контейнера
-USER www-data
+
