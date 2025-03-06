@@ -28,8 +28,8 @@ WORKDIR /var/www/html
 COPY . .
 
 # Устанавливаем владельца файлов www-data
-RUN chown -R www-data:www-data /var/www/html /var/www/.composer \
-    && chmod -R 775 /var/www/.composer
+RUN chown -R www-data:www-data /var/www/html /var/www/.composer || true \
+    && chmod -R 775 /var/www/.composer || true
 
 # Устанавливаем зависимости Laravel (без dev-пакетов)
 RUN composer install --no-dev --optimize-autoloader
