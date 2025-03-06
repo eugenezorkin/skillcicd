@@ -25,7 +25,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 WORKDIR /var/www/html
 
 # Копируем файлы проекта в контейнер
-COPY . .
+COPY ../../ . 
 
 RUN ls -la /var/www/html
 
