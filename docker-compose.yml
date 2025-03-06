@@ -1,0 +1,46 @@
+version: '3'
+services:
+  php:
+    #image: php:8.3-fpm
+    build:
+      context: ./
+      dockerfile: docker/php/Dockerfile
+    environment:
+      - "DOCUMENT_ROOT=${DOCUMENT_ROOT:-/var/www/html}"
+      - "HOST_NAME=${HOST_NAME:-localhost}"
+      - "LOCALTIME=${LOCALTIME:-Europe/Moscow}"
+      #- "MAILER_DSN=smtp://mailhog:1025"
+    volumes:
+      - '$PWD:/var/www/html'
+    depends_on:
+      - mailhog
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - '$PWD:/var/www/html'
+      - '$PWD/docker/nginx/conf.d:/etc/nginx/conf.d'
+    depends_on:
+      - php
+      - mailhog
+
+  mysql:
+    image: mysql:8
+    ports:
+      - 3306:3306
+    environment:
+        MYSQL_ROOT_PASSWORD: root  # Пароль для root (обязателен)
+        MYSQL_DATABASE: laravel_db          # Создаваемая база данных
+        MYSQL_USER: laravel_user            # Обычный пользователь
+        MYSQL_PASSWORD: laravel_password    # Пароль обычного пользователя
+    volumes:
+      - '$PWD/docker/volumes/mysql:/var/lib/mysql'
+
+  mailhog:
+    image: mailhog/mailhog
+    restart: always
+    ports:
+      - "1025:1025"
+      - "8025:8025"

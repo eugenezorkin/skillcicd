@@ -1,0 +1,21 @@
+# Исключаем локальный docker-compose и конфиги для nginx
+docker-compose.yml
+docker-compose.override.yml
+docker/nginx/
+
+# Исключаем файлы, не нужные в продакшене
+#.git/
+#.gitignore
+#README.md
+#.env
+#.env.example
+#node_modules/
+#storage/logs/
+#storage/debugbar/
+#vendor/
+
+# Исключаем IDE-конфиги
+.vscode/
+.idea/
+.DS_Store
+*.swp
