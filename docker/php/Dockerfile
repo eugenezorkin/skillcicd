@@ -24,11 +24,15 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Указываем рабочую директорию
 WORKDIR /var/www/html
 
-# Устанавливаем права на запись в var/
-# Создаём директории и даём права на запись
-RUN mkdir -p var public /var/www/.composer \
-    && chown -R www-data:www-data /var/www/html /var/www/.composer  \
-    && chmod -R 775 var public /var/www/.composer
+# Копируем файлы проекта в контейнер
+COPY . .
+
+# Устанавливаем владельца файлов www-data
+RUN chown -R www-data:www-data /var/www/html /var/www/.composer \
+    && chmod -R 775 /var/www/.composer
+
+# Устанавливаем зависимости Laravel (без dev-пакетов)
+RUN composer install --no-dev --optimize-autoloader
 
 # Меняем пользователя контейнера
 USER www-data
