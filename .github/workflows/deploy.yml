@@ -25,7 +25,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: docker/php/
+          context: .
+          file: docker/php/Dockerfile
           push: true
           tags: ghcr.io/eugenezorkin/skillcicd:latest  # или "docker.io/YOUR_DOCKERHUB_USERNAME/skillcicd:latest"
 
