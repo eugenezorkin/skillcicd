@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: docker/php/Dockerfile
+    image: ghcr.io/eugenezorkin/skillcicd:latest
+    container_name: skillcicd_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    environment:
+      - APP_ENV=production
+      - DOCUMENT_ROOT=/var/www/html
+      - LOCALTIME=Europe/Moscow
+    volumes:
+      - ~/skillcicd/.env:/var/www/html/.env
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:latest
+    container_name: skillcicd_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      app:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8
+    container_name: skillcicd_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: skillcicd
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: dbpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "sh", "-c", "mysqladmin ping -h localhost -udbuser -pdbpassword"]
+      interval: 5s  # Проверять каждые 5 секунд
+      retries: 5  # Повторять 5 раз, если не отвечает
+      timeout: 3s  # Максимальное время ожидания ответа — 3 секунды
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: skillcicd_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  mysql_data:
